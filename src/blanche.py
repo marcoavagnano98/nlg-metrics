@@ -38,14 +38,16 @@ def load(arg):
             nltk.download("punkt")
     if metric=="bleurt-base":
         os.system("pip install -r bleurt/requirements.txt")
-        url="https://storage.googleapis.com/bleurt-oss/bleurt-base-128.zip"
-        path="bleurt/bleurt-base-128.zip"
+        BLEURT_MODEL_PATH="bleurt/bleurt-base-128/"
+        if not os.path.isdir(BLEURT_MODEL_PATH):
+            url="https://storage.googleapis.com/bleurt-oss/bleurt-base-128.zip"
+            path="bleurt/bleurt-base-128.zip"
 
-        wget.download(url,out=path)
-        with zipfile.ZipFile(path,'r') as zip_ref:
-            zip_ref.extractall("bleurt/")
-        os.remove(path)
-        BLEURT_MODEL_PATH="bleurt/bleurt-base-128"
+            wget.download(url,out=path)
+            with zipfile.ZipFile(path,'r') as zip_ref:
+                zip_ref.extractall("bleurt/")
+            os.remove(path)
+       
 
 #run metrics
 def run_bleu(references=[], candidates=[]):
@@ -147,7 +149,7 @@ def run_meteor(references=[],candidates=[],alpha=0.9,beta=3,gamma=0.5):
     return {"meteor": np.mean(scores)}
     
 def run_bleurt(references=[],candidates=[],metric="bleurt-base"):
-    load(metric)
+    #load(metric)
     #checkpoint="bleurt/checkpoint/bleurt-base-128.zip"
     import bleurt.score as bs
     scorer = bs.BleurtScorer(BLEURT_MODEL_PATH)
@@ -155,8 +157,3 @@ def run_bleurt(references=[],candidates=[],metric="bleurt-base"):
     assert type(scores) == list and len(scores) == 1
     print(scores)
     
-
-
-
-
-
