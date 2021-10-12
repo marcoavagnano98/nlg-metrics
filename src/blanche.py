@@ -4,7 +4,7 @@ import os
 import nltk
 import zipfile
 #file metrics import
-#from FEQA.feqa import FEQA
+#
 BLEURT_MODEL_PATH="bleurt/checkpoint/bleurt-base-128"
 
 
@@ -17,13 +17,14 @@ def load(arg):
      #   print("Installing dependencies...")
       #  os.system("pip install -r rouge/requirements.txt")
     if metric == "feqa":
+        os.system("pip install -r FEQA/requirements.txt")
         print("Downloading models for generating questions and answers...")
         p_model_url="https://drive.google.com/u/0/uc?export=download&confirm=Beop&id=1GFnimonLFgGal1LT6KRgMJZLbxmNJvxF"
         squad_url="https://drive.google.com/u/0/uc?export=download&confirm=8hcD&id=1pWMsSTTwcoX0l75bzNFjvSC7firawp9M"
         out_model="FEQA/bart_qg/best_pretrained.pt"
         out_squad="FEQA/qa_models/pytorch_model.bin"
         wget.download(p_model_url,out=out_model)
-        gdown.download(squad_url,out=out_squad)
+        wget.download(squad_url,out=out_squad)
     if metric == "factcc":
         print("installing dependencies...")
         os.system("pip install -r factCC/requirements.txt")
@@ -101,16 +102,25 @@ def run_rouge(rouge_types,references=[], candidates=[],stemmer_enable=False,use_
 
 def run_feqa(references=[],candidates=[]):
     load("feqa")
+    from FEQA.feqa import FEQA
     scorer = FEQA(use_gpu=False)
     scorer.compute_score(references, candidates, aggregate=False)
 
 def run_factCC(data_path):
-    load("factCC")
+    #load("factCC")
     MODEL_NAME="bert-base-uncased"
     TASK_NAME="factcc_annotated"
     script="python3 factCC/modeling/run.py --task_name " + TASK_NAME + " --do_predict --eval_all_checkpoints \
             --do_lower_case --overwrite_cache --max_seq_length 512 --per_gpu_train_batch_size 12 \
             --model_type bert --model_name_or_path " + MODEL_NAME + "--data_dir" + data_path + "--output_dir factCC/"
+    import subprocess
+    subprocess.run(["python3", "factCC/modeling/run.py",
+                   "-task_name"+ TASK_NAME,"--do_predict",
+                   "--eval_all_checkpoints","--do_lower_case",
+                   "--overwrite_cache","--max_seq_length 512",
+                   "--per_gpu_train_batch_size 12","--model_type bert",
+                   "--model_name_or_path " + MODEL_NAME, "--data_dir" + data_path,
+                   "--output_dir factCC/"], capture_output=True)
 
 # coding=utf-8
 # Copyright 2020 The HuggingFace Datasets Authors.
@@ -156,4 +166,10 @@ def run_bleurt(references=[],candidates=[],metric="bleurt-base"):
     scores = scorer.score(references=references, candidates=candidates)
     assert type(scores) == list and len(scores) == 1
     print(scores)
+
+def run_BARTScore(references=[],candidates=[]):
+    #load("bascore")
+    import BARTScore.bart_score as bt
+    bart_scorer= bt.BARTScorer(device='cuda:0', checkpoint='facebook/bart-large-cnn')
+    bart_scorer.score(references, candidates)
     
