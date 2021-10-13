@@ -1,4 +1,4 @@
-src/bleurt/__pycache__
+src/bleurt/__pycache__/
 src/bleurt/checkpoint/
 src/factCC/*.tar.gz
 src/wandb/
@@ -7,6 +7,7 @@ src/.dist/
 src/BARTScore/__pycache__/
 src/bert_score/__pycache__/
 src/bleu/__pycache__/
+src/bleu/.dist/
 src/factCC/__pycache__/
 src/FEQA/__pycache__/
 src/meteor/__pycache__/
