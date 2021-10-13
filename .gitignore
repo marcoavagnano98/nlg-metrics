@@ -2,3 +2,13 @@ src/bleurt/__pycache__
 src/bleurt/checkpoint
 src/factCC/*.tar.gz
 src/wandb/
+src/__pycache__
+src/.dist
+src/BARTScore/__pycache__
+src/bert_score/__pycache__
+src/bleu/__pycache__
+src/factCC/__pycache__
+src/FEQA/__pycache__
+src/meteor/__pycache__
+src/questeval/__pycache__
+src/rouge/__pycache__
