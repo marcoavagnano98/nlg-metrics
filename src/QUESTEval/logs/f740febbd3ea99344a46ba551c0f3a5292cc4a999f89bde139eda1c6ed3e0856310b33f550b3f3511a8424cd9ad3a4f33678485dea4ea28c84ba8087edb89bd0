@@ -1,0 +1,46 @@
+{
+  "type": "src",
+  "text": "Today it'a cold day",
+  "self": {
+    "NER": {
+      "answers": [
+        "it'a"
+      ],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": [
+          "What was the weather like in the US?"
+        ],
+        "W_hash=ThomasNLG/t5-weighter_cnndm-en": [
+          0.938414454460144
+        ]
+      }
+    },
+    "NOUN": {
+      "answers": [
+        "Today it'a cold day"
+      ],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": [
+          "What was the weather like in the US?"
+        ],
+        "W_hash=ThomasNLG/t5-weighter_cnndm-en": [
+          0.9359004497528076
+        ]
+      }
+    }
+  },
+  "asked": {
+    "What day is it freezing in the US?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.38513386249542236,
+        "ground_truth": {
+          "Today": {
+            "bertscore": 0.655842125415802,
+            "f1": 0
+          }
+        }
+      }
+    }
+  }
+}

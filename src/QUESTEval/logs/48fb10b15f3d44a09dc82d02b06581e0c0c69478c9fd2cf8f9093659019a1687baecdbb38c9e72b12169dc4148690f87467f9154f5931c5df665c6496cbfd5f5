@@ -1,0 +1,32 @@
+{
+  "type": "ref",
+  "text": "d",
+  "self": {
+    "NER": {
+      "answers": [],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": []
+      }
+    },
+    "NOUN": {
+      "answers": [],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": []
+      }
+    }
+  },
+  "asked": {
+    "What day is it freezing in the US?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.0012139678001403809,
+        "ground_truth": {
+          "Today": {
+            "bertscore": 0.655842125415802,
+            "f1": 0
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,2 +1,4 @@
 src/bleurt/__pycache__
 src/bleurt/checkpoint
+src/factCC/*.tar.gz
+src/wandb/

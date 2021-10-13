@@ -1,0 +1,32 @@
+{
+  "type": "hyp",
+  "text": "b",
+  "self": {
+    "NER": {
+      "answers": [],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": []
+      }
+    },
+    "NOUN": {
+      "answers": [],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": []
+      }
+    }
+  },
+  "asked": {
+    "What is the smallest number in the symphony?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.008034229278564453,
+        "ground_truth": {
+          "E": {
+            "bertscore": 0.6807164549827576,
+            "f1": 0
+          }
+        }
+      }
+    }
+  }
+}

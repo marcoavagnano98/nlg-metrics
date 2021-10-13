@@ -1,0 +1,88 @@
+{
+  "type": "hyp",
+  "text": "Today is freezing",
+  "self": {
+    "NER": {
+      "answers": [
+        "Today"
+      ],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": [
+          "What day is it freezing in the US?"
+        ]
+      }
+    },
+    "NOUN": {
+      "answers": [],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": []
+      }
+    }
+  },
+  "asked": {
+    "What was the weather like in the US?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.23387199640274048,
+        "ground_truth": {
+          "it'a": {
+            "bertscore": 0.7164361476898193,
+            "f1": 0
+          },
+          "Today it'a cold day": {
+            "bertscore": 0.5674206018447876,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "What is the name of the king of the throne?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.0007791519165039062,
+        "ground_truth": {
+          "T": {
+            "bertscore": 0.6929338574409485,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "What is the number of the symphony?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.00016307830810546875,
+        "ground_truth": {
+          "y": {
+            "bertscore": 0.659351110458374,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "What is the first letter of the alphabet?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.0017572641372680664,
+        "ground_truth": {
+          "i": {
+            "bertscore": 0.6655168533325195,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "What is the sex of the person who is a sex slave?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.11791110038757324,
+        "ground_truth": {
+          "l": {
+            "bertscore": 0.6847227215766907,
+            "f1": 0
+          }
+        }
+      }
+    }
+  }
+}
