@@ -15,7 +15,7 @@ Blanche is a library containing the most important nlg evaluation metric and som
 * #### [FactCC](https://github.com/salesforce/factCC)
 ### QA based
 * #### [QUESTEval](https://github.com/ThomasScialom/QuestEval)
-* #### [FEQA](https://github.com/edmondscommerce/feqa)
+* #### [FEQA](https://github.com/esdurmus/feqa)
 
 All metrics have citations in blanche source code
 
