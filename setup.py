@@ -21,8 +21,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-	  'datasets',
-          'tensorflow',
+	  'wget'
       ],
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),

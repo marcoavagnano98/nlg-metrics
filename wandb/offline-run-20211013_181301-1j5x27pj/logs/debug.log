@@ -1,0 +1,32 @@
+2021-10-13 18:13:01,783 INFO    MainThread:16428 [wandb_setup.py:_flush():69] setting env: {}
+2021-10-13 18:13:01,784 INFO    MainThread:16428 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-10-13 18:13:01,784 INFO    MainThread:16428 [wandb_setup.py:_flush():69] setting login settings: {'mode': 'offline'}
+2021-10-13 18:13:01,785 INFO    MainThread:16428 [wandb_init.py:_log_setup():357] Logging user logs to C:\Users\Marco\Desktop\nlg-metrics\src\wandb\offline-run-20211013_181301-1j5x27pj\logs\debug.log
+2021-10-13 18:13:01,786 INFO    MainThread:16428 [wandb_init.py:_log_setup():358] Logging internal logs to C:\Users\Marco\Desktop\nlg-metrics\src\wandb\offline-run-20211013_181301-1j5x27pj\logs\debug-internal.log
+2021-10-13 18:13:01,790 INFO    MainThread:16428 [wandb_init.py:init():390] calling init triggers
+2021-10-13 18:13:01,791 INFO    MainThread:16428 [wandb_init.py:init():395] wandb.init called with sweep_config: {}
+config: {}
+2021-10-13 18:13:01,793 INFO    MainThread:16428 [wandb_init.py:init():435] starting backend
+2021-10-13 18:13:01,793 INFO    MainThread:16428 [backend.py:_multiprocessing_setup():70] multiprocessing start_methods=spawn, using: spawn
+2021-10-13 18:13:01,809 INFO    MainThread:16428 [backend.py:ensure_launched():135] starting backend process...
+2021-10-13 18:13:02,179 INFO    MainThread:16428 [backend.py:ensure_launched():139] started backend process with pid: 620
+2021-10-13 18:13:02,180 INFO    MainThread:16428 [wandb_init.py:init():440] backend started and connected
+2021-10-13 18:13:02,192 INFO    MainThread:16428 [wandb_init.py:init():499] updated telemetry
+2021-10-13 18:13:02,196 INFO    MainThread:16428 [wandb_init.py:init():562] starting run threads in backend
+2021-10-13 18:13:07,213 INFO    MainThread:16428 [wandb_run.py:_console_start():1651] atexit reg
+2021-10-13 18:13:07,218 INFO    MainThread:16428 [wandb_run.py:_redirect():1525] redirect: SettingsConsole.WRAP
+2021-10-13 18:13:07,219 INFO    MainThread:16428 [wandb_run.py:_redirect():1562] Wrapping output streams.
+2021-10-13 18:13:07,222 INFO    MainThread:16428 [wandb_run.py:_redirect():1586] Redirects installed.
+2021-10-13 18:13:07,222 INFO    MainThread:16428 [wandb_init.py:init():587] run started, returning control to user process
+2021-10-13 18:13:07,239 INFO    MainThread:16428 [wandb_run.py:_atexit_cleanup():1621] got exitcode: 2
+2021-10-13 18:13:07,239 INFO    MainThread:16428 [wandb_run.py:_restore():1593] restore
+2021-10-13 18:13:13,274 INFO    MainThread:16428 [wandb_run.py:_wait_for_finish():1746] got exit ret: None
+2021-10-13 18:13:18,395 INFO    MainThread:16428 [wandb_run.py:_wait_for_finish():1746] got exit ret: None
+2021-10-13 18:13:18,863 INFO    MainThread:16428 [wandb_run.py:_wait_for_finish():1746] got exit ret: 
+2021-10-13 18:13:18,997 INFO    MainThread:16428 [wandb_run.py:_wait_for_finish():1746] got exit ret: 
+2021-10-13 18:13:19,113 INFO    MainThread:16428 [wandb_run.py:_wait_for_finish():1746] got exit ret: done: true
+exit_result {
+}
+local_info {
+}
+

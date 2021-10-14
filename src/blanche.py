@@ -1,5 +1,6 @@
 import wget
 import os
+import gdown
 #import datasets
 import nltk
 import zipfile
@@ -14,18 +15,24 @@ BLEURT_MODEL_PATH="bleurt/checkpoint/bleurt-base-128"
 
 #load all prerequisites for all metrics in library
 def load(arg):
+   
     metric=arg.lower()
     if metric == "feqa":
         check_dependencies("FEQA/requirements.txt")
-        out_model="FEQA/bart_qg/best_pretrained.pt"
-        out_squad="FEQA/qa_models/pytorch_model.bin"
-        if not os.path.exists(out_model):
-            print("Downloading models for generating questions and answers...")
-            p_model_url="https://drive.google.com/u/0/uc?export=download&confirm=Beop&id=1GFnimonLFgGal1LT6KRgMJZLbxmNJvxF"
-            wget.download(p_model_url,out=out_model)
-        if not os.path.exists(out_squad):
-            squad_url="https://drive.google.com/u/0/uc?export=download&confirm=8hcD&id=1pWMsSTTwcoX0l75bzNFjvSC7firawp9M"
-            wget.download(squad_url,out=out_squad)
+        path_m="FEQA/bart_qg/checkpoint_best.pt"
+        path_pt="FEQA/qa_models/pytorch_model.bin"
+        if os.path.isfile(path_m):
+            print("Already downloaded")
+        else:
+            print("Downloading models for generate questions...")
+            url="https://drive.google.com/u/0/uc?export=download&confirm=Beop&id=1GFnimonLFgGal1LT6KRgMJZLbxmNJvxF"
+            gdown.download(url,path_m,quiet=False)
+        if os.path.isfile(path_pt):
+            print("Already downloaded")
+        else:
+            print("Downloading models for generate answers...")
+            url="https://drive.google.com/u/0/uc?export=download&confirm=8hcD&id=1pWMsSTTwcoX0l75bzNFjvSC7firawp9M"
+            gdown.download(url,path_pt,quiet=False)
     if metric == "factcc":
         check_dependencies("factCC/requirements.txt")
         path="factCC/factcc-checkpoint.tar.gz"
@@ -154,6 +161,10 @@ def run_rouge(rouge_types,references=[], candidates=[],stemmer_enable=False,use_
     """
 def run_feqa(references=[],candidates=[]):
     load("feqa")
+    # import nltk
+    
+    # nltk.download('stopwords')
+    # nltk.download('punkt')
     from FEQA.feqa import FEQA
     scorer = FEQA(use_gpu=False)
     scorer.compute_score(references, candidates, aggregate=False)
