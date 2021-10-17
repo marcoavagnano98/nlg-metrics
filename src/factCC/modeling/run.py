@@ -306,6 +306,7 @@ def predict(args,model,tokenizer,prefix=""):
                if preds is None:
                      preds = logits.detach().cpu().numpy()
     preds=np.argmax(preds,axis=1)
+    print(preds)
     return preds
 
 
@@ -566,6 +567,7 @@ def main():
             model = model_class.from_pretrained(checkpoint)
             model.to(args.device)
             result = predict(args, model, tokenizer, prefix=global_step)
+
           #  result = dict((k + '_{}'.format(global_step), v) for k, v in result.items())
           # results.update(result)
 

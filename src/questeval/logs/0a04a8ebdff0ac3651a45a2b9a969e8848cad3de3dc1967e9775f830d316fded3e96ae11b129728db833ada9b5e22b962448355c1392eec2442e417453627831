@@ -1,0 +1,215 @@
+{
+  "type": "src",
+  "text": "FDA advisers are set to meet today to consider authorizing a booster dose of the Johnson & Johnson Covid-19 vaccine. They'll also discuss whether a mix-and-match strategy of using a booster from a different vaccine maker is safe or even beneficial. The same advisers voted yesterday to recommend emergency use authorization of a Moderna vaccine booster for those at high risk of Covid-19 -- the same groups authorized to receive a booster dose of Pfizer's vaccine.",
+  "self": {
+    "NER": {
+      "answers": [
+        "FDA",
+        "today",
+        "Johnson & Johnson",
+        "yesterday",
+        "Moderna",
+        "Pfizer"
+      ],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": [
+          "What agency is considering approving a Covid-19 vaccine?",
+          "When are the FDA advisers meeting?",
+          "What company is to approve a Covid-19 vaccine?",
+          "When did the FDA approve a booster for Covid-19?",
+          "What is the name of the vaccine that the FDA is considering approving for emergency use?",
+          "Who is the same group that approved the Covid-19 vaccine?"
+        ],
+        "W_hash=ThomasNLG/t5-weighter_cnndm-en": [
+          0.39466941356658936,
+          0.6712470650672913,
+          0.402820885181427,
+          0.9340576529502869,
+          0.283427894115448,
+          0.8467775583267212
+        ]
+      }
+    },
+    "NOUN": {
+      "answers": [
+        "FDA advisers",
+        "a booster dose",
+        "the Johnson & Johnson Covid-19 vaccine",
+        "They",
+        "a mix-and-match strategy",
+        "a booster",
+        "a different vaccine maker",
+        "The same advisers",
+        "emergency use authorization",
+        "a Moderna vaccine booster",
+        "high risk",
+        "Covid-19",
+        "the same groups",
+        "a booster dose",
+        "Pfizer's vaccine"
+      ],
+      "QG_hash=ThomasNLG/t5-qg_squad1-en": {
+        "questions": [
+          "Who is to meet today to discuss the Covid-19 vaccine?",
+          "What is the FDA considering authorizing?",
+          "What is the new FDA approval for?",
+          "What is the reason for the FDA meeting?",
+          "What is the FDA considering?",
+          "What is the new FDA plan to approve?",
+          "What is the mix-and-match strategy?",
+          "Who voted to approve a booster dose for Covid-19?",
+          "What did the FDA approve?",
+          "What did the FDA approve for the Covid-19 vaccine?",
+          "What group of people will receive a moderna vaccine booster?",
+          "What vaccine is being discussed at the meeting?",
+          "Who are the same groups that received the Covid-19 vaccine?",
+          "What is the FDA considering authorizing?",
+          "What is the same group that was approved for Covid-19?"
+        ],
+        "W_hash=ThomasNLG/t5-weighter_cnndm-en": [
+          0.4940532445907593,
+          0.1424277424812317,
+          0.7791658043861389,
+          0.8609423637390137,
+          0.28622812032699585,
+          0.6572580337524414,
+          0.5619475245475769,
+          0.6872804760932922,
+          0.7582166790962219,
+          0.605729341506958,
+          0.5087106227874756,
+          0.21071749925613403,
+          0.620917797088623,
+          0.1424277424812317,
+          0.6694250106811523
+        ]
+      }
+    }
+  },
+  "asked": {
+    "What agency is considering approving the Covid-19 vaccine?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "FDA",
+        "answerability": 0.9752952456474304,
+        "ground_truth": {
+          "FDA": {
+            "bertscore": 1.000000238418579,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    "When did the FDA meet to consider the Johnson & Johnson Covid-19 vaccine?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "today",
+        "answerability": 0.9297618865966797,
+        "ground_truth": {
+          "today": {
+            "bertscore": 0.9999991059303284,
+            "f1": 1.0
+          }
+        }
+      }
+    },
+    "Who is considering approving the Covid-19 vaccine?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "FDA",
+        "answerability": 0.9369800686836243,
+        "ground_truth": {
+          "Johnson & Johnson": {
+            "bertscore": 0.7129464745521545,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "When did the FDA approve the Covid-19 vaccine?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.07184690237045288,
+        "ground_truth": {
+          "yesterday": {
+            "bertscore": 0.7072550058364868,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "Who is the FDA considering approving of the Covid-19 vaccine?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "Johnson & Johnson Covid-19 vaccine",
+        "answerability": 0.558401346206665,
+        "ground_truth": {
+          "Pfizer": {
+            "bertscore": 0.6647542119026184,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "Who voted yesterday for the Johnson & Johnson Covid-19 vaccine?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.32108962535858154,
+        "ground_truth": {
+          "FDA advisers": {
+            "bertscore": 0.6912136077880859,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "What did the FDA advisers vote for?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "emergency use authorization of a Moderna vaccine booster",
+        "answerability": 0.7819706201553345,
+        "ground_truth": {
+          "authorizing": {
+            "bertscore": 0.7162296772003174,
+            "f1": 0
+          },
+          "authorization": {
+            "bertscore": 0.740103542804718,
+            "f1": 0.25
+          }
+        }
+      }
+    },
+    "What is the new name of the vaccine?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "Johnson & Johnson Covid-19",
+        "answerability": 0.8341503739356995,
+        "ground_truth": {
+          "the Johnson & Johnson Covid-19 vaccine": {
+            "bertscore": 0.8514660596847534,
+            "f1": 0.8571428571428571
+          }
+        }
+      }
+    },
+    "Who voted for the Johnson & Johnson Covid-19 vaccine?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.12438005208969116,
+        "ground_truth": {
+          "The same advisers": {
+            "bertscore": 0.6794610023498535,
+            "f1": 0
+          }
+        }
+      }
+    },
+    "What did the FDA approve?": {
+      "QA_hash=ThomasNLG/t5-qa_squad2neg-en": {
+        "answer": "unanswerable",
+        "answerability": 0.014836251735687256,
+        "ground_truth": {
+          "Pfizer vaccine": {
+            "bertscore": 0.636418879032135,
+            "f1": 0
+          }
+        }
+      }
+    }
+  }
+}

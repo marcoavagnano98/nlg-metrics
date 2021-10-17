@@ -1,6 +1,8 @@
 src/bleurt/__pycache__/
-src/bleurt/checkpoint/
+src/bleurt/bleurt-base-128/
 src/factCC/*.tar.gz
+src/factCC/data-dev.jsonl
+src/factCC/factcc-checkpoint/
 src/wandb/
 src/__pycache__/
 src/.dist/
@@ -13,3 +15,5 @@ src/FEQA/__pycache__/
 src/meteor/__pycache__/
 src/questeval/__pycache__/
 src/rouge/__pycache__/
+src/FEQA/bart_qg/checkpoints/*.pt
+src/FEQA/qa_models/squad1.0/pytorch_model.bin

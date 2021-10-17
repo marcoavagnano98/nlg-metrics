@@ -1,8 +1,8 @@
 Cython
 numpy
-benepar
+benepar==0.1.2
 torch
-fairseq
+fairseq==0.9.0
 nltk
 spacy
 tensorflow
