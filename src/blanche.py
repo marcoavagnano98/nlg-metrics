@@ -638,6 +638,7 @@ def file_mean(f_name="rouge/results-1.txt",method=2):
     #     line.count(']')
 
 def run_nubia(ref, cands, range=[]):
+    load("nubia")
     #check_dependencies("nubia/requirements.txt")
     if not ref:
         ref=utils.load_preds("targets_egv_paper.txt")
