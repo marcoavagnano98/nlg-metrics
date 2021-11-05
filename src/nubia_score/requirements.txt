@@ -1,5 +1,5 @@
 torch >= 1.4.0
-#fairseq
+fairseq
 pytorch-transformers
 numpy >= 1.18.2
 joblib

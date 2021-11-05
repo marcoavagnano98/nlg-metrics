@@ -3,7 +3,7 @@ import torch
 import os
 import wget
 import numpy as np
-from transformers import RobertaModel
+from fairseq.models import RobertaModel
 from joblib import load
 
 pretrained = os.path.join(os.path.dirname(__file__), "pretrained")

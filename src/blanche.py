@@ -637,22 +637,25 @@ def file_mean(f_name="rouge/results-1.txt",method=2):
     # # for line in lines:
     #     line.count(']')
 
-def run_nubia(ref, cands, range=[]):
+def run_nubia(ref=[], cands=[], _range=[]):
     load("nubia")
     #check_dependencies("nubia/requirements.txt")
     if not ref:
         ref=utils.load_preds("targets_egv_paper.txt")
-    else:
+    if not cands:
         cands=utils.load_preds("preds_egv_paper.txt")
+    assert len(ref) == len(cands)
     scores=[]
     import nubia_score as ns
     nubia = ns.Nubia()
-    if not range:
-        rannge=[0,len(ref)]
-    for i in range(range[0],range[1]):
+    if not _range:
+        _range=[0,len(ref)]
+    if len(_range) == 1:
+        _range.append(len(ref))
+    for i in range(_range[0],_range[1]):
         scores.append(nubia.score(ref[i],cands[i]))
         print(i)
-    with open("/nubia/results.txt", "a") as f:
+    with open("nubia_score/results.txt", "a") as f:
         for score in scores:
             f.write(str(score))
             f.write("\n")
