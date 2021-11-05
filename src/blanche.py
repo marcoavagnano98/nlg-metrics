@@ -6,17 +6,19 @@ import nltk
 import zipfile
 import importlib.util
 import sys
+import pathlib
+import utils
+import numpy as np
 #file metrics import
 #
-BLEURT_MODEL_PATH="bleurt/bleurt-base-128/"
-FACTCC_CHECKPOINT="factCC/factcc-checkpoint/"
+from vars import *
 
 def load(arg):
-   """
+    """
     Parameters
     ----------
     arg: metric to load
-   """
+    """
     metric=arg.lower()
     if metric == "feqa":
         check_dependencies("FEQA/requirements.txt")
@@ -52,11 +54,13 @@ def load(arg):
         check_dependencies("bert_score/requirements.txt")
     if metric=="questeval":
         check_dependencies("questeval/requirements.txt")
+    if metric=='nubia':
+        check_dependencies("nubia_score/requirements.txt")
 
 def download_and_extract(url,storage_path,folder="./",unpackable=True,from_drive=False):
     """
     Parameters
-    ---------
+    ---------ì
     url: file to download
     storage_path: path to save compressed file
     folder: folder to extract tar/zip
@@ -131,10 +135,21 @@ def check_dependencies(r_file):
     """
 def run_bleu(references=[], candidates=[]):
     import bleu.bleu_metric as bl
-    results=bl.compute_bleu(references,candidates)
-    (bleu, precisions, bp, ratio, translation_length, reference_length) =results
-    print(bleu)
+    if not candidates:
+        candidates=utils.load_preds("preds_egv_paper.txt")
+    if not references:
+        references=utils.load_preds("targets_egv_paper.txt")
+    ref_tokens=[]
+    for ref in references:
+        ref_tokens.append([ref.split()])
+    pred_tokens=[]
+    for pred in candidates:
+        pred_tokens.append(pred.split())
+# prefect match
+    results=bl.compute_bleu(ref_tokens,pred_tokens)
+    (bleu, precisions, bp, ratio, translation_length, reference_length) = results
 
+    return bleu
 
 
     """
@@ -169,7 +184,7 @@ def run_bleu(references=[], candidates=[]):
     http://www.apache.org/licenses/LICENSE-2.0
     
     """
-def run_rouge(references, candidates, rouge_types, stemmer_enable=False, use_aggregator=True):
+def run_rouge(references=[], candidates=[], rouge_types=["rouge1","rouge2","rougeL"], stemmer_enable=False, use_aggregator=True):
     """
     Parameters
     ----------
@@ -182,19 +197,38 @@ def run_rouge(references, candidates, rouge_types, stemmer_enable=False, use_agg
     import rouge.rouge_scorer as rg
     import rouge.scoring
     #load("rouge")
+    method=0
     rouge_types = rouge_types
+    if not candidates:
+        candidates=utils.load_preds("preds_egv_paper.txt")
+    if not references:
+        references=utils.load_preds("targets_egv_paper.txt")
     scorer=rg.RougeScorer(rouge_types=rouge_types,use_stemmer=stemmer_enable)
     if use_aggregator:
         aggregator = rouge.scoring.BootstrapAggregator()
     else:
         scores=[]
+    # if method == 3:
+    #     counter=0
+    #     app_list=[]
+    #     scores=[]
+    #     for ref, pred in zip(references, candidates):
+    #         score=scorer.score(ref, pred)
+    #         app_list.append(score["rougeL"].fmeasure)
+    #         counter+=1
+    #         if counter % 4 == 0 and not counter ==0:
+    #             scores.append(utils.max_score(app_list,counter))
+    #     import numpy as np
+    #     print(np.mean(scores))
+    #else:
+
     for ref, pred in zip(references, candidates):
         score = scorer.score(ref, pred)
+        
         if use_aggregator:
             aggregator.add_scores(score)
         else:
-            scores.append(score)
-
+            scores.append(score)            
     if use_aggregator:
         result = aggregator.aggregate()
     else:
@@ -208,6 +242,7 @@ def run_rouge(references, candidates, rouge_types, stemmer_enable=False, use_agg
     else:
         print(result)
     
+    return result
 
 
     """ 
@@ -236,7 +271,7 @@ def run_rouge(references, candidates, rouge_types, stemmer_enable=False, use_agg
     relevants aspects captured: faithfulness, factuality
 
     """
-def run_feqa(sources,candidates):
+def run_feqa(references,candidates):
     
     """ 
     Parameters
@@ -247,16 +282,18 @@ def run_feqa(sources,candidates):
 
     """
     load("feqa")
-    # import nltk
-    
-    # nltk.download('stopwords')
-    # nltk.download('punkt')
+    feqa_downloads()
+    from FEQA.feqa import FEQA
+    scorer = FEQA(use_gpu=False)
+    score=scorer.compute_score(references, candidates, aggregate=False)
+
+    return score
+def feqa_downloads():
+    import benepar
+    nltk.download('punkt')
     benepar.download('benepar_en2')
     nltk.download('stopwords')
     os.system("python -m spacy download en_core_web_sm")
-    from FEQA.feqa import FEQA
-    scorer = FEQA(use_gpu=False)
-    scorer.compute_score(references, candidates, aggregate=False)
 
     """
     FactCC metric
@@ -283,10 +320,10 @@ def run_factCC(list):
 
     """
    # load("factCC")
-    jsonl_dumper(list) #create jsonl for factCC script
+    utils.jsonl_dumper('factcc',list) #create jsonl for factCC script
     MODEL_NAME="bert-base-uncased"
     TASK_NAME="factcc_annotated"
-    script="python3 factCC/modeling/run.py --task_name " + TASK_NAME + " --do_predict --eval_all_checkpoints \
+    script="python3 factCC/modeling/run.py --task_name " + TASK_NAME + " --do_eval --eval_all_checkpoints \
             --do_lower_case --overwrite_cache --max_seq_length 512 --per_gpu_train_batch_size 12 \
             --model_type bert --model_name_or_path " + MODEL_NAME + " --data_dir factCC/ --output_dir " + FACTCC_CHECKPOINT
    # print(script)
@@ -328,7 +365,7 @@ def run_factCC(list):
 
     """
 
-def run_meteor(references=[],candidates=[],alpha=0.9,beta=3,gamma=0.5):
+def run_meteor(references=[],candidates=[],alpha=0.9,beta=3,gamma=0.5,method=1):
     """
     Parameters
     ----------
@@ -346,19 +383,40 @@ def run_meteor(references=[],candidates=[],alpha=0.9,beta=3,gamma=0.5):
     NLTK_VERSION = nltk.__version__
     if NLTK_VERSION >= "3.6.4":    
         from nltk import word_tokenize  
+    if not candidates:
+        candidates=utils.load_preds("preds_egv_paper.txt")
+    if not references:
+        references=utils.load_preds("targets_egv_paper.txt")
     if NLTK_VERSION >= "3.6.4":
-        scores = [
-            meteor_score.single_meteor_score(
-                word_tokenize(ref), word_tokenize(pred), alpha=alpha, beta=beta, gamma=gamma
-            )
-            for ref, pred in zip(references, candidates)
-        ]
+        scores_list=[]
+        scores=[]
+        if method==3:
+            counter=0
+            for ref, pred in zip(references, candidates):
+          
+                scores_list.append(meteor_score.single_meteor_score(
+                                      word_tokenize(ref), word_tokenize(pred), alpha=alpha, beta=beta, gamma=gamma
+                                   )
+                )
+                counter+=1
+                if(counter % 4 == 0 and not counter==0):
+                    scores.append(utils.max_score(scores_list,counter))
+        else:
+            scores = [
+                meteor_score.single_meteor_score(
+                    word_tokenize(ref), word_tokenize(pred), alpha=alpha, beta=beta, gamma=gamma
+                )
+                for ref, pred in zip(references, candidates)
+            ]
     else:
         scores = [
             meteor_score.single_meteor_score(ref, pred, alpha=alpha, beta=beta, gamma=gamma)
             for ref, pred in zip(references, candidates)
         ]
-
+    with open("meteor/results.txt","a") as f:
+        for element in scores:
+            f.write(str(element))
+            f.write("\n")
     return {"meteor": np.mean(scores)}
     """
     Bleurt metric
@@ -388,11 +446,19 @@ def run_bleurt(references=[],candidates=[],metric="bleurt-base"):
     """
     load(metric)
     #checkpoint="bleurt/checkpoint/bleurt-base-128.zip"
+    if not candidates:
+        candidates=utils.load_preds("preds_egv_paper.txt")
+    if not references:
+        references=utils.load_preds("targets_egv_paper.txt")
     import bleurt.score as bs
+ 
     scorer = bs.BleurtScorer(BLEURT_MODEL_PATH)
-    scores = scorer.score(references=references, candidates=candidates)
-    assert type(scores) == list and len(scores) == 1
-    print(scores)
+    i=0
+    all_scores=[]
+    for i in range(0,len(references)):
+        scores = scorer.score(references=[references[i]], candidates=[candidates[i]])
+        assert type(scores) == list and len(scores) == 1
+        print(i)
     """ 
     BARTScore metric
     citation:
@@ -418,12 +484,21 @@ def run_bleurt(references=[],candidates=[],metric="bleurt-base"):
     F score (r ↔ h): Consider both directions and use the arithmetic average of Precision and Recall ones
 
     """
-def run_BARTScore(references=[],candidates=[]):
+def run_BARTScore(references=[],candidates=[], device='cpu'):
     #load("bascore")
     import BARTScore.bart_score as bt
-    bart_scorer= bt.BARTScorer(device='cpu', checkpoint='facebook/bart-large-cnn')
+    import numpy as np
+    if not candidates:
+        candidates=utils.load_preds("preds_egv_paper.txt")
+    if not references:
+        references=utils.load_preds("targets_egv_paper.txt")
+    bart_scorer= bt.BARTScorer(device=device, checkpoint='facebook/bart-large-cnn')
     score_list=bart_scorer.score(references, candidates)
-    print(score_list)
+    
+    # scores=norm(score_list)
+    # print(scores)
+    print(np.mean(score_list))
+    return score_list
     """
     BERTScore metric
     @misc{zhang2020bertscore,
@@ -439,13 +514,28 @@ def run_BARTScore(references=[],candidates=[]):
     The representation for each word piece is computed with a Transformer encoder by BERT model
     FBert: 2 * PBert * RBert / (PBert + RBert) 
     """
-    
+# def softmax(x):
+#     import numpy as np
+#     y = np.exp(x - np.max(x))
+#     f_x = y / np.sum(np.exp(x))
+#     return f_x    
+# def norm(x):
+#     import numpy as np
+#     normalized_v = x/np.linalg.norm(x)
+#     return 1+normalized_v 
 def run_BERTScore(references=[],candidates=[]):
     load("bertscore")
     from bert_score import BERTScorer
+    if not candidates and not references:
+        candidates=utils.load_preds("preds_egv_paper.txt")
+        references=utils.load_preds("targets_egv_paper.txt")
     scorer = BERTScorer(lang="en", rescale_with_baseline=True)
-    P, R, F1 = scorer.score(candidates, references)
-    print(F1)
+    P, R, F1 = scorer.score(candidates, references,verbose=True)
+    with open("results.txt","a") as fl:
+        for f in F1:
+            fl.write(str(f))
+            fl.write("\n")
+    print(F1.mean())
 
 
     """
@@ -475,7 +565,7 @@ def run_BERTScore(references=[],candidates=[]):
 
     relevants aspects captured: factuality, text relevance
     """
-def run_questeval(sources,candidates,ref=[],task="summarization",do_weighter=False,no_cuda=True):
+def run_questeval(references=[],candidates=[],ref=[],task='text2text',do_weighter=False,no_cuda=True,range=[]):
     """
     Parameters
     ----------
@@ -484,20 +574,87 @@ def run_questeval(sources,candidates,ref=[],task="summarization",do_weighter=Fal
 
     """
     load("questeval")
+    if not candidates and not references:
+        candidates=utils.load_preds("preds_egv_paper.txt")
+        references=utils.load_preds("targets_egv_paper.txt")
     from questeval.questeval_metric import QuestEval
-    questeval = QuestEval(no_cuda=no_cuda,task=task,do_weighter=True)
-    score = questeval.corpus_questeval(candidates,sources,ref)
-    print(score)
+    questeval = QuestEval()
+    l=[]
+    for i in range(range[0], range[1]):
+        score = questeval.corpus_questeval(hypothesis=[candidates[i]],list_references=[[references[i]]],task=task)
+        l.append(score["corpus_score"])
+        with open("questeval/results.txt","a") as f:
+            f.write(str(score["corpus_score"]))
+            f.write("\n")
+        print(i)
+    import numpy as np
+    print(np.mean(l))
 
-def jsonl_dumper(jsonl_list):
-    import json
-    seq_id=0
-    with open('factCC/data-dev.jsonl', 'w') as outfile:
-        for item in jsonl_list:
-            data={'id' : str(seq_id),'text': str(item[0]), 'claim' : str(item[1]), 'label': 'CORRECT'}
-            json.dump(data, outfile)
-            outfile.write('\n')
-            seq_id+=1
   
+def file_mean(f_name="rouge/results-1.txt",method=2):
+    import numpy as np
+    import utils
+    with open(f_name,"r") as f:
+        s_scores=f.readlines()
+    f_list=[]
+    for s_score in s_scores:
+        f_list.append(float(s_score))
 
-   
+    if method == 1:
+        return np.mean(f_list)
+
+    if method==2:
+        max_logs=[]
+        for n in range(3,len(f_list),4):
+            max_logs.append(float(f_list[n]))
+        print(len(max_logs))
+        return np.mean(max_logs)
+    if method == 3:
+        max_logs=[]
+        l_size=len(f_list)
+        for n in range(0,l_size):
+                if((n % 4 == 0 and not n==0) or n == (l_size-1)):
+                    if n == (l_size - 1):
+                        max_logs.append(utils.max_score(f_list,l_size))
+                    else:
+                        max_logs.append(utils.max_score(f_list,n))
+        return np.mean(max_logs)
+
+
+
+    
+    # # with open(PATH_F, "r") as f:
+    # #     lines=f.readlines()
+    # max=0
+    # for line in lines:
+    #     groups = groupby(line)
+    #     result = [(label, sum(1 for _ in group)) for label, group in groups]
+    #     for r in result:
+    #         if(r[0] == ']'):
+    #            if max < r[1]:
+    #                max=r[1]
+    # print(max)
+    # # for line in lines:
+    #     line.count(']')
+
+def run_nubia(ref, cands, range=[]):
+    #check_dependencies("nubia/requirements.txt")
+    if not ref:
+        ref=utils.load_preds("targets_egv_paper.txt")
+    else:
+        cands=utils.load_preds("preds_egv_paper.txt")
+    scores=[]
+    import nubia_score as ns
+    nubia = ns.Nubia()
+    if not range:
+        rannge=[0,len(ref)]
+    for i in range(range[0],range[1]):
+        scores.append(nubia.score(ref[i],cands[i]))
+        print(i)
+    with open("/nubia/results.txt", "a") as f:
+        for score in scores:
+            f.write(str(score))
+            f.write("\n")
+    return scores
+
+    

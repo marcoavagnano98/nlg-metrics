@@ -4,3 +4,4 @@ sentencepiece
 datasets
 Unidecode
 spacy
+matplotlib

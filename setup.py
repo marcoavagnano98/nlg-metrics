@@ -21,7 +21,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-	  'wget'
+	  'wget',
+      'gdown',
+      'nltk'
       ],
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),

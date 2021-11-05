@@ -17,7 +17,7 @@ class BARTScorer:
 
         # Set up loss
         self.loss_fct = nn.NLLLoss(reduction='none', ignore_index=self.model.config.pad_token_id)
-        self.lsm = nn.LogSoftmax(dim=1)
+        self.lsm = nn.Softmax(dim=1)
 
     def load(self, path=None):
         """ Load model from paraphrase finetuning """
@@ -60,10 +60,16 @@ class BARTScorer:
                         labels=tgt_tokens
                     )
                     logits = output.logits.view(-1, self.model.config.vocab_size)
+                    print(logits)
                     loss = self.loss_fct(self.lsm(logits), tgt_tokens.view(-1))
+                    print(loss)
                     loss = loss.view(tgt_tokens.shape[0], -1)
+                    print(loss)
                     loss = loss.sum(dim=1) / tgt_len
+                    print(loss)
+                    
                     curr_score_list = [-x.item() for x in loss]
+                    print(curr_score_list)
                     score_list += curr_score_list
 
             except RuntimeError:

@@ -304,7 +304,9 @@ def predict(args,model,tokenizer,prefix=""):
                     logits_ix = 1 if args.model_type == "bert" else 7
                     logits = outputs[logits_ix]
                if preds is None:
-                     preds = logits.detach().cpu().numpy()
+                   preds = logits.detach().cpu().numpy()
+               else:
+                   preds = np.append(preds, logits.detach().cpu().numpy(), axis=0)
     preds=np.argmax(preds,axis=1)
     print(preds)
     return preds

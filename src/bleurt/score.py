@@ -89,7 +89,7 @@ class LazyPredictor(Predictor):
     self._bleurt_graph = tf.Graph()
     with self._bleurt_graph.as_default():
 
-      imported = tf.saved_model.load(self.checkpoint)
+      imported = tf.compat.v2.saved_model.load(self.checkpoint)
       bleurt_model_ops = imported.signatures["serving_default"]
       self._bleurt_ops = bleurt_model_ops(
           input_ids=tf.compat.v1.placeholder(tf.int64, name="input_ids"),
@@ -173,7 +173,7 @@ class BleurtScorer(object):
     self._predictor.initialize()
     logging.info("BLEURT initialized.")
 
-  def score(self, *args, references=[], candidates=[], batch_size=None):
+  def score(self, *args, references=[], candidates=[], batch_size=8):
     """Scores a collection of references and candidates.
 
     Args:
