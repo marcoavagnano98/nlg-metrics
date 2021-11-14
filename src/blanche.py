@@ -612,7 +612,7 @@ def run_questeval(references=[],candidates=[],sources=[],
         references=utils.load_preds(f_labels)
     from questeval.questeval_metric import QuestEval
     questeval = QuestEval(task=task, do_weighter=do_weighter,no_cuda=no_cuda)
-    score = questeval.corpus_questeval(hypothesis=candidates,list_references=[references])
+    score = questeval.corpus_questeval(hypothesis=candidates,list_references=[references],sources=sources)
     return score
 
   
