@@ -42,11 +42,11 @@ def _get_ngrams(segment, max_order):
   return ngram_counts
 
 
-def compute_bleu(reference_corpus, translation_corpus, max_order=150,
+def compute_bleu(reference_corpus, translation_corpus, max_order=4,
                  smooth=False):
   """Computes BLEU score of translated segments against one or more references.
   Args:
-    reference_corpus: list of references for each translation. Each
+    reference_corpus: list of lists of references for each translation. Each
         reference should be tokenized into a list of tokens.
     translation_corpus: list of translations to score. Each translation
         should be tokenized into a list of tokens.
@@ -60,6 +60,8 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=150,
   possible_matches_by_order = [0] * max_order
   reference_length = 0
   translation_length = 0
+  index=0
+  matches_max=[]
   for (references, translation) in zip(reference_corpus,
                                        translation_corpus):
     reference_length += min(len(r) for r in references)
@@ -76,6 +78,11 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=150,
       possible_matches = len(translation) - order + 1
       if possible_matches > 0:
         possible_matches_by_order[order-1] += possible_matches
+    # m=0
+    # for i in range(0,max_order):
+    #   m+=matches_by_order[i]
+    # matches_max.append(matches_by_order[m])
+
   precisions = [0] * max_order
   for i in range(0, max_order):
     if smooth:
@@ -87,7 +94,6 @@ def compute_bleu(reference_corpus, translation_corpus, max_order=150,
                          possible_matches_by_order[i])
       else:
         precisions[i] = 0.0
-
 
   if min(precisions) > 0:
     p_log_sum = sum((1. / max_order) * math.log(p) for p in precisions)

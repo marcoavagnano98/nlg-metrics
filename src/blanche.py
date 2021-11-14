@@ -136,9 +136,9 @@ def check_dependencies(r_file):
 def run_bleu(references=[], candidates=[]):
     import bleu.bleu_metric as bl
     if not candidates:
-        candidates=utils.load_preds("preds_egv_paper.txt")
+        candidates=utils.load_preds("bart_labels.txt")
     if not references:
-        references=utils.load_preds("targets_egv_paper.txt")
+        references=utils.load_preds("bart_preds.txt")
     ref_tokens=[]
     for ref in references:
         ref_tokens.append([ref.split()])
@@ -146,11 +146,30 @@ def run_bleu(references=[], candidates=[]):
     for pred in candidates:
         pred_tokens.append(pred.split())
 # prefect match
-    results=bl.compute_bleu(ref_tokens,pred_tokens)
-    (bleu, precisions, bp, ratio, translation_length, reference_length) = results
+    print(pred_tokens[0])
+    with open("bleu/results.txt","a") as f:
+        for r,p in zip(ref_tokens,pred_tokens):
+            results=bl.compute_bleu(reference_corpus=r,translation_corpus=p)
+            (bleu, precisions, bp, ratio, translation_length, reference_length) = results
+            f.write(str(bleu))
+            f.write("\n")
 
     return bleu
+def test_bleu():
+    refs=utils.load_preds("bart_labels.txt")
+    cands=utils.load_preds("bart_preds.txt")
+    from nltk.translate.bleu_score import sentence_bleu
+    with open("bleu/results.txt","a") as f:
+        for r,c in zip(refs,cands):
+            f.write(str(sentence_bleu([r.split()],c.split(),weights=(1, 0, 0, 0))) + '\n')
 
+   # return sentence_bleu("data/targets_egv_paper.txt","data/preds_egv_paper.txt")
+    # 
+    #
+    #     for cand,ref in zip(cands,refs):
+    #         bleu=list_bleu([ref], cand)
+    #         f.write(str(bleu))
+    #         f.write("\n")
 
     """
     Rouge metric
@@ -184,7 +203,7 @@ def run_bleu(references=[], candidates=[]):
     http://www.apache.org/licenses/LICENSE-2.0
     
     """
-def run_rouge(references=[], candidates=[], rouge_types=["rouge1","rouge2","rougeL"], stemmer_enable=False, use_aggregator=True):
+def run_rouge(references=[], candidates=[], rouge_types=["rougeL"], stemmer_enable=False, use_aggregator=True):
     """
     Parameters
     ----------
@@ -200,9 +219,9 @@ def run_rouge(references=[], candidates=[], rouge_types=["rouge1","rouge2","roug
     method=0
     rouge_types = rouge_types
     if not candidates:
-        candidates=utils.load_preds("preds_egv_paper.txt")
+        candidates=utils.load_preds("bart_preds.txt")
     if not references:
-        references=utils.load_preds("targets_egv_paper.txt")
+        references=utils.load_preds("bart_labels.txt")
     scorer=rg.RougeScorer(rouge_types=rouge_types,use_stemmer=stemmer_enable)
     if use_aggregator:
         aggregator = rouge.scoring.BootstrapAggregator()
@@ -224,7 +243,8 @@ def run_rouge(references=[], candidates=[], rouge_types=["rouge1","rouge2","roug
 
     for ref, pred in zip(references, candidates):
         score = scorer.score(ref, pred)
-        
+        with open("rouge/bartL.txt","a") as f:
+            f.write(str(score["rougeL"].fmeasure) + "\n")
         if use_aggregator:
             aggregator.add_scores(score)
         else:
@@ -239,8 +259,9 @@ def run_rouge(references=[], candidates=[], rouge_types=["rouge1","rouge2","roug
         for rouge_type in rouge_types:
             score=result[rouge_type].mid.fmeasure
             print("[" + rouge_type + "] = " + str(score))
-    else:
-        print(result)
+
+    # else:
+    #     print(result)
     
     return result
 
@@ -384,9 +405,9 @@ def run_meteor(references=[],candidates=[],alpha=0.9,beta=3,gamma=0.5,method=1):
     if NLTK_VERSION >= "3.6.4":    
         from nltk import word_tokenize  
     if not candidates:
-        candidates=utils.load_preds("preds_egv_paper.txt")
+        candidates=utils.load_preds("bart_preds.txt")
     if not references:
-        references=utils.load_preds("targets_egv_paper.txt")
+        references=utils.load_preds("bart_labels.txt")
     if NLTK_VERSION >= "3.6.4":
         scores_list=[]
         scores=[]
@@ -413,10 +434,10 @@ def run_meteor(references=[],candidates=[],alpha=0.9,beta=3,gamma=0.5,method=1):
             meteor_score.single_meteor_score(ref, pred, alpha=alpha, beta=beta, gamma=gamma)
             for ref, pred in zip(references, candidates)
         ]
-    with open("meteor/results.txt","a") as f:
-        for element in scores:
-            f.write(str(element))
-            f.write("\n")
+    # with open("meteor/bart.txt","a") as f:
+    #     for element in scores:
+    #         f.write(str(element))
+    #         f.write("\n")
     return {"meteor": np.mean(scores)}
     """
     Bleurt metric
@@ -437,28 +458,35 @@ def run_meteor(references=[],candidates=[],alpha=0.9,beta=3,gamma=0.5,method=1):
     task: summarization, machine translation
     """
     
-def run_bleurt(references=[],candidates=[],metric="bleurt-base"):
+def run_bleurt(references=[],candidates=[],f_preds="preds.txt",h_labels="labels.txt",metric="bleurt-20"):
     """
     Parameters
     ----------
+    references: list of sources text for candidate
+    candidates: list of texts to evaluate
     metric: specify which type of model is used for evaluation
 
     """
     load(metric)
     #checkpoint="bleurt/checkpoint/bleurt-base-128.zip"
     if not candidates:
-        candidates=utils.load_preds("preds_egv_paper.txt")
+        candidates=utils.load_preds(f_preds)
     if not references:
-        references=utils.load_preds("targets_egv_paper.txt")
+        references=utils.load_preds(h_labels)
     import bleurt.score as bs
- 
+    import numpy as np
     scorer = bs.BleurtScorer(BLEURT_MODEL_PATH)
-    i=0
+    #i=0
     all_scores=[]
+    # with open("bleurt/bart.txt", "a") as f:
     for i in range(0,len(references)):
         scores = scorer.score(references=[references[i]], candidates=[candidates[i]])
+        all_scores.append(scores)
+        # f.write(str(scores))
+        # f.write("\n")
         assert type(scores) == list and len(scores) == 1
         print(i)
+    print(np.mean(all_scores))
     """ 
     BARTScore metric
     citation:
@@ -493,7 +521,7 @@ def run_BARTScore(references=[],candidates=[], device='cpu'):
     if not references:
         references=utils.load_preds("targets_egv_paper.txt")
     bart_scorer= bt.BARTScorer(device=device, checkpoint='facebook/bart-large-cnn')
-    score_list=bart_scorer.score(references, candidates)
+    score_list=np.mean(bart_scorer.score(references, candidates))
     
     # scores=norm(score_list)
     # print(scores)
@@ -525,17 +553,17 @@ def run_BARTScore(references=[],candidates=[], device='cpu'):
 #     return 1+normalized_v 
 def run_BERTScore(references=[],candidates=[]):
     load("bertscore")
-    from bert_score import BERTScorer
+    import bert_score
     if not candidates and not references:
         candidates=utils.load_preds("preds_egv_paper.txt")
         references=utils.load_preds("targets_egv_paper.txt")
-    scorer = BERTScorer(lang="en", rescale_with_baseline=True)
-    P, R, F1 = scorer.score(candidates, references,verbose=True)
-    with open("results.txt","a") as fl:
-        for f in F1:
-            fl.write(str(f))
-            fl.write("\n")
-    print(F1.mean())
+    #scorer = BERTScorer(lang="en", rescale_with_baseline=True)
+    P, R, F1 = bert_score.score(candidates,references,lang="en",rescale_with_baseline=True,verbose=True)
+    # with open("results.txt","a") as fl:
+    #     for f in F1:
+    #         fl.write(str(f))
+    #         fl.write("\n")
+    print(F1)
 
 
     """
@@ -565,33 +593,30 @@ def run_BERTScore(references=[],candidates=[]):
 
     relevants aspects captured: factuality, text relevance
     """
-def run_questeval(references=[],candidates=[],ref=[],task='text2text',do_weighter=False,no_cuda=True,range=[]):
+def run_questeval(references=[],candidates=[],sources=[],
+                    f_preds="preds.txt",f_labels="labels.txt",task='text2text',do_weighter=False,no_cuda=True):
     """
     Parameters
     ----------
+    references: list of references for each hypotesis
+    candidates: list of claims to be evaluated
+    sources: list of source documents for summarization task
     task: there is many type of task from questeval: summarization, text2text, data2text
     no_cuda: True use cpu, False use gpu, if available
+    do_weighter: weight for summarization task
 
     """
     load("questeval")
     if not candidates and not references:
-        candidates=utils.load_preds("preds_egv_paper.txt")
-        references=utils.load_preds("targets_egv_paper.txt")
+        candidates=utils.load_preds(f_preds)
+        references=utils.load_preds(f_labels)
     from questeval.questeval_metric import QuestEval
-    questeval = QuestEval()
-    l=[]
-    for i in range(range[0], range[1]):
-        score = questeval.corpus_questeval(hypothesis=[candidates[i]],list_references=[[references[i]]],task=task)
-        l.append(score["corpus_score"])
-        with open("questeval/results.txt","a") as f:
-            f.write(str(score["corpus_score"]))
-            f.write("\n")
-        print(i)
-    import numpy as np
-    print(np.mean(l))
+    questeval = QuestEval(task=task, do_weighter=do_weighter,no_cuda=no_cuda)
+    score = questeval.corpus_questeval(hypothesis=candidates,list_references=[references])
+    return score
 
   
-def file_mean(f_name="rouge/results-1.txt",method=2):
+def file_mean(f_name="nubia/scores.txt",method=1):
     import numpy as np
     import utils
     with open(f_name,"r") as f:
@@ -612,7 +637,7 @@ def file_mean(f_name="rouge/results-1.txt",method=2):
     if method == 3:
         max_logs=[]
         l_size=len(f_list)
-        for n in range(0,l_size):
+        for n in range(0,len(f_list)):
                 if((n % 4 == 0 and not n==0) or n == (l_size-1)):
                     if n == (l_size - 1):
                         max_logs.append(utils.max_score(f_list,l_size))
@@ -660,5 +685,87 @@ def run_nubia(ref=[], cands=[], _range=[]):
             f.write(str(score))
             f.write("\n")
     return scores
+def compute_repet():
+    import numpy as np
+    ref=utils.load_preds("targets_egv_paper.txt")
+    cands=utils.load_preds("preds_egv_paper.txt")
+    return count_rep(cands)
+def count_rep(cands):
+    corpus_score=[]
+    index=0
+    for  c in cands:
+        index+=1
+
+        token_c=c.split()
+        #print(token_c)
+        token_uc=list(dict.fromkeys(token_c)) #delete duplicates
+        #print(token_uc)
+        
+        length_c=len(token_c)
+        penalty=(len(token_c) - len(token_uc)) / length_c
+        #print(length_c)
+        occurrence=0
+        precision=0
+        with open("repts.txt", "a") as f:
+            for t in token_uc:
+                rep=token_c.count(t)
+                if rep > 1:
+                    occurrence+=rep
+            score=occurrence/length_c
+            f.write(str(score) + "\n")
+            corpus_score.append(score)
+    return np.mean(corpus_score)
+
 
     
+import sys
+from collections import defaultdict
+
+def ngrams(tokens, n):
+  ngram = []
+  for token in tokens:
+    if len(ngram) < n:
+      ngram.append(token)
+    else:
+      yield ngram
+      ngram.pop(0)
+      ngram.append(token)
+  if len(ngram) == n:
+    yield ngram
+
+def count_ngrams(tokens, n):
+  counts = defaultdict(int)
+  for ngram in ngrams(tokens, n):
+    counts[' '.join(ngram)] += 1
+  return counts
+
+def rr(tokens, max_n=4, window_size=1000):
+  if len(tokens) < max_n or len(tokens) < window_size:
+    raise Exception('Too few tokens, change window_size or max_n')
+
+  result = 1.0
+
+  for n in range(1, max_n+1):
+    numerator = 0.0
+    denominator = 0.0
+
+    for window in ngrams(tokens, window_size):
+      ngram_counts = count_ngrams(window, n)
+      singletons = [ngram for ngram, count in ngram_counts.items() if count == 1]
+      numerator += len(ngram_counts) - len(singletons)
+      denominator += len(ngram_counts)
+    result *= numerator / denominator
+
+  return pow(result, 1.0/max_n)
+  
+
+def test_ngrams():
+    s="ciao come stai io bene tu".split()
+    #rr(s)
+    cands=utils.load_preds("preds_egv_paper.txt")
+    stt=""
+    for c in cands:
+        stt+=c + " "
+    print(len(stt))
+    print(rr(stt.split()))
+    print(count_rep(stt))
