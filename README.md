@@ -22,4 +22,10 @@ All metrics have citations in blanche source code
 Note: FEQA and FactCC may have some trouble in execution
 
 ## EXAMPLE OF USE:
+### From blanche/src folder 
 ![image](https://user-images.githubusercontent.com/22610930/153309666-1415f556-3f65-419d-ad6f-e35920c6e909.png)
+
+## UPDATE TEST SET
+* Create data folder (blanche/data)
+* Put it file of references and predictions <code> update_test_set("name of test set", "references file name", "predictions file name") </code>
+* Results are saved in a metrics directory <code> name_of_test_set_name_metrics </code> 
