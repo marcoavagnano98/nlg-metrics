@@ -3,7 +3,7 @@ from sklearn import metrics
 import wget
 import os
 import gdown
-#import datasets
+from collections import defaultdict
 import nltk
 import zipfile
 import sys
@@ -671,6 +671,64 @@ class Blanche():
             for score in scores:
                 f.write(str(score) + "\n")
         return scores
+    def length(self):
+        if self.test_set["check"]:
+            candidates=utils.load_preds(self.test_set["predictions"])
+        counter=0
+        for candidate in candidates:
+            counter=counter + len(candidate.split(" "))
+        return counter / len(candidates)
+    def count_ngrams(self,tokens, n):
+        counts = defaultdict(int)
+        for ngram in self.ngrams(tokens, n):
+            counts[' '.join(ngram)] += 1
+        return counts
+    def repetitiveness(self):
+        if self.test_set["check"]: #use test set if exists
+            candidates=utils.load_preds(self.test_set["predictions"])
+        from collections import Counter
+        sum=0
+        for candidate in candidates:
+            monograms=candidate.split(" ")
+            n_words=len(monograms)
+            m_counted=Counter(monograms)
+            for ngram in m_counted.values():
+                if ngram > 1:
+                    sum = sum + 1 #if a word  that repeats itself is found
+            sum=sum+n_words
+        print(sum / len(candidates))
+
+    def abstractness(self, n=1):
+        if self.test_set["check"]: #use test set if exists
+            references=utils.load_preds(self.test_set["references"])
+            candidates=utils.load_preds(self.test_set["predictions"])
+        total_match=0
+        n_words=0
+      
+        for reference,candidate in zip(references,candidates):
+            match=0
+            monograms=candidate.split(" ")
+            n_words=n_words + len(monograms) #count all words in test set
+            if n > len(monograms):
+                return "Not possible to create " + str(n) + "-grams, too many few words"
+            for w2 in self.ngrams(monograms,n):
+                substr=" ".join(w2)
+                if substr not in reference:
+                    match=match+1
+            # n_words=n_words+1 #counter for total n-gram number
+            total_match=total_match + match
+        return total_match/n_words
+    def ngrams(self,tokens, n): #provides an iterable object of n-gram 
+        ngram = []
+        for token in tokens:
+            if len(ngram) < n:
+                ngram.append(token)
+            else:
+                yield ngram
+                ngram.pop(0)
+                ngram.append(token)
+        if len(ngram) == n:
+            yield ngram
     # def compute_repet():
     #     import numpy as np
     #     ref=utils.load_preds("targets_egv_paper.txt")
