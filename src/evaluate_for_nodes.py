@@ -2,7 +2,7 @@ from vars import *
 import os
 def filter_by_node():
 
-    PATH_F=os.path.join(PATH_D,"inputs_egv_paper.txt")
+    PATH_F=os.path.join(PATH_D,"targets_t5small_egv_beam.txt")
   
     with open(PATH_F, "r") as f:
         lines=f.readlines()
@@ -14,7 +14,7 @@ def filter_by_node():
         nodes=line.split("]")
         n_nodes.append(len(nodes) - 1) #cut \n character
     #print(len(lines[10].replace("[[","[").replace("]]]]]]","]").replace("]]]]]","]").replace("]]]]","]").replace("]]]","]").replace("]]","]").split("]")) - 1)
-    PATH_O=os.path.join(PATH_D,"num_nodes_for_line.txt")
+    PATH_O=os.path.join(PATH_D,"ts_num_nodes_for_line.txt")
     with open(PATH_O,"a")as f:
         for node in n_nodes:
             f.write(str(node) + '\n')
@@ -31,19 +31,19 @@ def count_square(line):
                 max=r[1]
     return max
 
-def score_f_nodes(num_nodes=[1,2,3,4,5,6,7],m_type="bart"):
+def score_f_nodes(num_nodes=[1,2,3,4,5,6,7],m_type=""):
     PATH_F=os.path.join(PATH_D,"num_nodes_for_line.txt")
     #METEOR
     aggregator=[]
-    with open("meteor/bart.txt","r") as f:
+    with open("meteor/barte.txt","r") as f:
         meteor=f.readlines()
-    with open("rouge/bart1.txt","r") as f:
+    with open("rouge/barte1.txt","r") as f:
         rouge1=f.readlines()
-    with open("rouge/bart2.txt","r") as f:
+    with open("rouge/barte2.txt","r") as f:
         rouge2=f.readlines()
-    with open("rouge/bartL.txt","r") as f:
+    with open("rouge/barteL.txt","r") as f:
         rougeL=f.readlines()
-    with open("bleu/bart.txt","r") as f:
+    with open("bleu/results_barte.txt","r") as f:
         bleu=f.readlines()
     # with open("rouge/results-L.txt","r") as f:
     #     rougeL=f.readlines()
@@ -53,8 +53,8 @@ def score_f_nodes(num_nodes=[1,2,3,4,5,6,7],m_type="bart"):
         bartscore=f.readlines()
     # with open("nubia/scores.txt","r") as f:
     #     nub=f.readlines()
-    # with open("bert_score/results.txt","r") as f:
-    #     bert_s=f.readlines()
+    with open("bert_score/barte.txt","r") as f:
+        bert_s=f.readlines()
             
     # with open("repts.txt","r") as f:
     #     repts=f.readlines()
@@ -82,7 +82,7 @@ def score_f_nodes(num_nodes=[1,2,3,4,5,6,7],m_type="bart"):
             # print(calc_score("Bleu",ex_index,nn,bleu))
             # print(calc_score("Bleurt",ex_index,nn,bleurt))
             #print(calc_score("BARTSore",ex_index,nn,bartscore))
-           # print(calc_score("Meteor",ex_index,nn,meteor))
+            print(calc_score("Meteor",ex_index,nn,meteor))
             print(calc_score("Rouge1",ex_index,nn,rouge1))
             print(calc_score("Rouge2",ex_index,nn,rouge2))
             print(calc_score("RougeL",ex_index,nn,rougeL))
@@ -99,15 +99,17 @@ def score_f_nodes(num_nodes=[1,2,3,4,5,6,7],m_type="bart"):
                         if int(line) >= nn:
                             ex_index.append(ind)
                 ind+=1
-    #print("List size: {}".format(len(ex_index)))    
-    # print(calc_score("rouge2",ex_index,nn,rouge2))
-    # print(calc_score("rougeL",ex_index,nn,rougeL))
-    #print(calc_score("Bleurt",ex_index,nn,bleurt))
-    #print(len(nub))
-    #print(calc_score("Nubia",ex_index,nn,nub))
-    #print(calc_score("Bert-score",ex_index,nn,bert_s))
-    # print(calc_score("Bleu",ex_index,nn,bleu))
-    # print(calc_score("RR",ex_index,nn,repts))
+    #print("List size: {}".format(len(ex_index)))  
+            print(calc_score("Meteor",ex_index,nn,meteor))
+            print(calc_score("Rouge1",ex_index,nn,rouge1))
+            print(calc_score("rouge2",ex_index,nn,rouge2))
+            print(calc_score("rougeL",ex_index,nn,rougeL))
+            #print(calc_score("Bleurt",ex_index,nn,bleurt))
+            #print(len(nub))
+            #print(calc_score("Nubia",ex_index,nn,nub))
+            print(calc_score("Bert-score",ex_index,nn,bert_s))
+            print(calc_score("Bleu",ex_index,nn,bleu))
+            # print(calc_score("RR",ex_index,nn,repts))
     #print(calc_score("QuestEval",ex_index,nn,qeval_l))
 
     

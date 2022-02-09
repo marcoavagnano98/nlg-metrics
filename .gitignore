@@ -14,7 +14,7 @@ src/factCC/__pycache__/*
 src/FEQA/__pycache__/*
 src/FEQA/bart_qg/checkpoints/checkpoint_best.pt
 src/FEQA/qa_models/squad1.0/pytorch_model.bin
-
+data/*
 src/meteor/__pycache__/*
 src/questeval/__pycache__/*
 src/rouge/__pycache__/*

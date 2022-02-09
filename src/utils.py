@@ -2,7 +2,7 @@ import json
 import os
 from vars import *
 
-def jsonl_dumper(arg,jsonl_list):
+def jsonl_dumper(arg,jsonl_list):  #make input for factcc
     if arg == 'factcc': 
         seq_id=0
         with open('factCC/data-dev.jsonl', 'w') as outfile:
@@ -12,13 +12,12 @@ def jsonl_dumper(arg,jsonl_list):
                 outfile.write('\n')
                 seq_id+=1
 def load_preds(f_name,method=1):
-    char_to_replace=["[","]",",","'"]
     PATH_F=os.path.join(PATH_D,f_name)
     with open(PATH_F,encoding="utf8") as f:
         lines=f.readlines()
     input=s_format(lines)
   
-    if method == 2: # filtering list, take only the first input for each prediction
+    if method == 2: # filtering list, take only the first input for each prediction (method 2 for test)
         f_list=[]
         for n in range(0,len(input),4):
             f_list.append(input[n])
@@ -29,9 +28,9 @@ def load_preds(f_name,method=1):
 def s_format(lines=[]):
     f_lines=[]
     for l in lines:
-        f_lines.append(l.translate({ord(i): None for i in "[,']"}))
+        f_lines.append(l.translate({ord(i): None for i in "[,']"})) # filter input lines
     return f_lines
-def max_score(score_list,i_max):
+def max_score(score_list,i_max):  #method 3 for test
     s_index=i_max-4
     split_list=score_list[s_index:i_max]
     return max(split_list)
