@@ -20,3 +20,6 @@ Blanche is a library containing the most important nlg evaluation metric and som
 All metrics have citations in blanche source code
 
 Note: FEQA and FactCC may have some trouble in execution
+
+## EXAMPLE OF USE:
+![image](https://user-images.githubusercontent.com/22610930/153309666-1415f556-3f65-419d-ad6f-e35920c6e909.png)
